@@ -7,6 +7,7 @@ using DisCatSharp.EventArgs;
 using DisCatSharp.Exceptions;
 using DisCatSharp.Interactivity.Extensions;
 using Npgsql;
+using DisCatSharp.ApplicationCommands.Context;
 
 namespace DreamyManagement.Helpers.TempVoice;
 
@@ -53,8 +54,21 @@ public class TempVoiceHelper : BaseCommandModule
         await DatabaseService.DeleteDataFromTable("tempvoice", DeletewhereConditions);
         return;
     }
+    protected static DiscordRole GetCustomEveryoneRole(VoiceStateUpdateEventArgs args)
+    {
+        return args.Guild.GetRole(ulong.Parse(GetVCConfig("ERole")));
+    }
 
-    protected static async Task<bool> NoChannel(CommandContext ctx)
+    protected static DiscordRole GetCustomEveryoneRole(CommandContext ctx)
+    {
+        return ctx.Guild.GetRole(ulong.Parse(GetVCConfig("ERole")));
+    }
+
+    protected static DiscordRole GetCustomEveryoneRole(DiscordInteraction ctx)
+    {
+        return ctx.Guild.GetRole(ulong.Parse(GetVCConfig("ERole")));
+    }
+        protected static async Task<bool> NoChannel(CommandContext ctx)
     {
         string errorMessage = $"<:attention:1085333468688433232> **Fehler!** " +
                               $"Du besitzt keinen eigenen Kanal oder der Kanal gehört dir nicht. " +
@@ -460,7 +474,7 @@ public class TempVoiceHelper : BaseCommandModule
 
         if (userChannel != null && dbChannels.Contains((long)userChannel.Id) || userChannel != null && isMod)
         {
-            DiscordRole default_role = interaction.Guild.EveryoneRole;
+            DiscordRole default_role = GetCustomEveryoneRole(interaction);
             DiscordChannel channel = member.VoiceState.Channel;
             var overwrite = channel.PermissionOverwrites.FirstOrDefault(o => o.Id == default_role.Id);
             if (overwrite?.CheckPermission(Permissions.UseVoice) == PermissionLevel.Denied)
@@ -502,7 +516,7 @@ public class TempVoiceHelper : BaseCommandModule
 
         if (userChannel != null && dbChannels.Contains((long)userChannel.Id) || userChannel != null && isMod)
         {
-            DiscordRole default_role = interaction.Guild.EveryoneRole;
+            DiscordRole default_role = GetCustomEveryoneRole(interaction);
             DiscordChannel channel = member.VoiceState.Channel;
             var overwrite = channel.PermissionOverwrites.FirstOrDefault(o => o.Id == default_role.Id);
             if (overwrite == null || overwrite?.CheckPermission(Permissions.UseVoice) == PermissionLevel.Unset)
@@ -545,7 +559,7 @@ public class TempVoiceHelper : BaseCommandModule
 
         if (userChannel != null && dbChannels.Contains((long)userChannel.Id) || userChannel != null && isMod)
         {
-            DiscordRole default_role = interaction.Guild.EveryoneRole;
+            DiscordRole default_role = GetCustomEveryoneRole(interaction);
             DiscordChannel channel = member.VoiceState.Channel;
             var overwrite = channel.PermissionOverwrites.FirstOrDefault(o => o.Id == default_role.Id);
             if (overwrite?.CheckPermission(Permissions.AccessChannels) == PermissionLevel.Denied)
@@ -587,10 +601,10 @@ public class TempVoiceHelper : BaseCommandModule
 
         if (userChannel != null && dbChannels.Contains((long)userChannel.Id) || userChannel != null && isMod)
         {
-            DiscordRole default_role = interaction.Guild.EveryoneRole;
+            DiscordRole default_role = GetCustomEveryoneRole(interaction);
             DiscordChannel channel = member.VoiceState.Channel;
             var overwrite = channel.PermissionOverwrites.FirstOrDefault(o => o.Id == default_role.Id);
-            if (overwrite == null || overwrite?.CheckPermission(Permissions.AccessChannels) == PermissionLevel.Unset)
+            if (overwrite == null || overwrite?.CheckPermission(Permissions.AccessChannels) == PermissionLevel.Allowed)
             {
                 DiscordInteractionResponseBuilder builder = new()
                 {
@@ -602,7 +616,7 @@ public class TempVoiceHelper : BaseCommandModule
             }
 
             var overwrites = userChannel.PermissionOverwrites.Select(x => x.ConvertToBuilder()).ToList();
-            overwrites = overwrites.Merge(default_role, Permissions.None, Permissions.None, Permissions.AccessChannels);
+            overwrites = overwrites.Merge(default_role, Permissions.AccessChannels, Permissions.None);
             await userChannel.ModifyAsync(x => x.PermissionOverwrites = overwrites);
 
             DiscordInteractionResponseBuilder builder_ = new()
@@ -1117,7 +1131,7 @@ public class TempVoiceHelper : BaseCommandModule
         }
 
         bool ch_locked = false;
-        var overwrite = userChannel.PermissionOverwrites.FirstOrDefault(o => o.Id == interaction.Guild.EveryoneRole.Id);
+        var overwrite = userChannel.PermissionOverwrites.FirstOrDefault(o => o.Id == GetCustomEveryoneRole(interaction).Id);
         if (overwrite == null || overwrite?.CheckPermission(Permissions.UseVoice) == PermissionLevel.Unset)
         {
             ch_locked = false;
