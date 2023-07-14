@@ -1,9 +1,9 @@
-using AGC_Management.Services.DatabaseHandler;
+using DreamyManagement.Services.DatabaseHandler;
 using DisCatSharp;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 
-namespace AGC_Management.Tasks;
+namespace DreamyManagement.Tasks;
 
 public class ModerationSystemTasks
 {

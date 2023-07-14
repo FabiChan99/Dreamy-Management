@@ -1,6 +1,6 @@
-﻿using AGC_Management.Helpers;
-using AGC_Management.Helpers.TempVoice;
-using AGC_Management.Services.DatabaseHandler;
+﻿using DreamyManagement.Helpers;
+using DreamyManagement.Helpers.TempVoice;
+using DreamyManagement.Services.DatabaseHandler;
 using DisCatSharp;
 using DisCatSharp.CommandsNext;
 using DisCatSharp.CommandsNext.Attributes;
@@ -12,7 +12,7 @@ using DisCatSharp.Interactivity.Extensions;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 
-namespace AGC_Management.Commands.TempVC;
+namespace DreamyManagement.Commands.TempVC;
 
 [EventHandler]
 public class TempVCEventHandler : TempVoiceHelper

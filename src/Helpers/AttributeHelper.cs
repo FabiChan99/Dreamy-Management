@@ -1,10 +1,10 @@
-using AGC_Management.Services.DatabaseHandler;
+using DreamyManagement.Services.DatabaseHandler;
 using DisCatSharp.CommandsNext;
 using DisCatSharp.CommandsNext.Attributes;
 using DisCatSharp.Entities;
 using DisCatSharp.Lavalink;
 
-namespace AGC_Management.Helpers;
+namespace DreamyManagement.Helpers;
 
 public class RequireStaffRole : CheckBaseAttribute
 {

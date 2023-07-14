@@ -1,4 +1,4 @@
-﻿namespace AGC_Management.Helpers;
+﻿namespace DreamyManagement.Helpers;
 
 public class Converter
 {

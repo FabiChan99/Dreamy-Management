@@ -1,6 +1,6 @@
-﻿using AGC_Management.Services;
-using AGC_Management.Services.DatabaseHandler;
-using AGC_Management.Tasks;
+﻿using DreamyManagement.Services;
+using DreamyManagement.Services.DatabaseHandler;
+using DreamyManagement.Tasks;
 using DisCatSharp;
 using DisCatSharp.CommandsNext;
 using DisCatSharp.CommandsNext.Exceptions;
@@ -12,7 +12,7 @@ using DisCatSharp.Interactivity.Extensions;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 
-namespace AGC_Management;
+namespace DreamyManagement;
 
 internal class Program : BaseCommandModule
 {
@@ -89,7 +89,6 @@ internal class Program : BaseCommandModule
         await discord.ConnectAsync();
 
         await StartTasks(discord);
-        var lavalink = await LavalinkHandler.InitLavalink(discord);
         await Task.Delay(-1);
     }
 

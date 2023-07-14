@@ -1,7 +1,7 @@
 ﻿using DisCatSharp.Entities;
 using DisCatSharp.Enums;
 
-namespace AGC_Management;
+namespace DreamyManagement;
 
 internal static class DiscordExtension
 {

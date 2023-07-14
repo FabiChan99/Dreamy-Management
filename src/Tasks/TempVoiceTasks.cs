@@ -1,9 +1,9 @@
-﻿using AGC_Management.Services.DatabaseHandler;
+﻿using DreamyManagement.Services.DatabaseHandler;
 using DisCatSharp;
 using DisCatSharp.Entities;
 using Microsoft.Extensions.Logging;
 
-namespace AGC_Management.Tasks;
+namespace DreamyManagement.Tasks;
 
 public class TempVoiceTasks
 {

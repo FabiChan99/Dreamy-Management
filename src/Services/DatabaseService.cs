@@ -1,7 +1,7 @@
 ﻿using Npgsql;
 using System.Data;
 
-namespace AGC_Management.Services.DatabaseHandler;
+namespace DreamyManagement.Services.DatabaseHandler;
 
 public static class DatabaseService
 {

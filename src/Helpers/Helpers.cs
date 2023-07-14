@@ -1,7 +1,7 @@
 using DisCatSharp.CommandsNext;
 using DisCatSharp.Entities;
 
-namespace AGC_Management.Helpers;
+namespace DreamyManagement.Helpers;
 
 public static class Helpers
 {

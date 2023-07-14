@@ -1,9 +1,9 @@
-﻿using AGC_Management.Helpers;
+﻿using DreamyManagement.Helpers;
 using DisCatSharp.Entities;
 using IniParser;
 using IniParser.Model;
 
-namespace AGC_Management;
+namespace DreamyManagement;
 
 public static class BotConfig
 {

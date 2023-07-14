@@ -5,7 +5,7 @@ using DisCatSharp.Entities;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 
-namespace AGC_Management.Services;
+namespace DreamyManagement.Services;
 
 public class BotControl : BaseCommandModule
 {

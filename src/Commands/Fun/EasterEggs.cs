@@ -1,8 +1,8 @@
-﻿using AGC_Management.Helpers;
+﻿using DreamyManagement.Helpers;
 using DisCatSharp.CommandsNext;
 using DisCatSharp.CommandsNext.Attributes;
 
-namespace AGC_Management.Commands.Fun;
+namespace DreamyManagement.Commands.Fun;
 
 public class AGCEasterEggs : BaseCommandModule
 {

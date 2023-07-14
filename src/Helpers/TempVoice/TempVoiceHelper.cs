@@ -1,4 +1,4 @@
-﻿using AGC_Management.Services.DatabaseHandler;
+﻿using DreamyManagement.Services.DatabaseHandler;
 using DisCatSharp;
 using DisCatSharp.CommandsNext;
 using DisCatSharp.Entities;
@@ -8,7 +8,7 @@ using DisCatSharp.Exceptions;
 using DisCatSharp.Interactivity.Extensions;
 using Npgsql;
 
-namespace AGC_Management.Helpers.TempVoice;
+namespace DreamyManagement.Helpers.TempVoice;
 
 public class TempVoiceHelper : BaseCommandModule
 {

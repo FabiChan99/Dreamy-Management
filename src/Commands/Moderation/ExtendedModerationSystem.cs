@@ -1,5 +1,5 @@
-﻿using AGC_Management.Helpers;
-using AGC_Management.Services.DatabaseHandler;
+﻿using DreamyManagement.Helpers;
+using DreamyManagement.Services.DatabaseHandler;
 using DisCatSharp;
 using DisCatSharp.CommandsNext;
 using DisCatSharp.CommandsNext.Attributes;
@@ -10,7 +10,7 @@ using DisCatSharp.Interactivity.Extensions;
 using Newtonsoft.Json;
 using Npgsql;
 
-namespace AGC_Management.Commands.Moderation;
+namespace DreamyManagement.Commands.Moderation;
 
 public class ExtendedModerationSystem : ModerationSystem
 {
