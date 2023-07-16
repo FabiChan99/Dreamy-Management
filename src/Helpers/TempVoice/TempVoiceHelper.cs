@@ -471,12 +471,14 @@ public class TempVoiceHelper : BaseCommandModule
             await NoChannel(interaction);
             return;
         }
-
         if (userChannel != null && dbChannels.Contains((long)userChannel.Id) || userChannel != null && isMod)
         {
             DiscordRole default_role = GetCustomEveryoneRole(interaction);
+            Console.WriteLine("eeee");
             DiscordChannel channel = member.VoiceState.Channel;
+            Console.WriteLine("Channel is not null");
             var overwrite = channel.PermissionOverwrites.FirstOrDefault(o => o.Id == default_role.Id);
+
             if (overwrite?.CheckPermission(Permissions.UseVoice) == PermissionLevel.Denied)
             {
                 DiscordInteractionResponseBuilder builder = new()
@@ -1949,8 +1951,11 @@ public class TempVoiceHelper : BaseCommandModule
 
                     //overwrites = overwrites.Merge(user, Permissions.None, Permissions.None, Permissions.UseVoice | Permissions.AccessChannels);
                     overwrites = overwrites.Merge(user, Permissions.None, Permissions.UseVoice, Permissions.AccessChannels);
-
-                    await user.DisconnectFromVoiceAsync();
+                    if (interaction.Channel.Users.Contains(user))
+                    {
+                        await user.DisconnectFromVoiceAsync();
+                    }
+                    
 
                     usersList.Add(user);
                 }

@@ -793,6 +793,15 @@ public class ExtendedModerationSystem : ModerationSystem
             .WithColor(BotConfig.GetEmbedColor())
             .WithFooter(ctx.User.UsernameWithDiscriminator, ctx.User.AvatarUrl).Build();
         await ctx.RespondAsync(sembed);
+
+        var logembed = new DiscordEmbedBuilder()
+    .WithAuthor(ctx.User.UsernameWithDiscriminator, null, ctx.User.AvatarUrl)
+    .WithDescription(
+        $"**Warned:** {user.UsernameWithDiscriminator} (ID: ``{user.Id}``)\n" +
+        $"**Grund:** {reason}")
+    .WithColor(BotConfig.GetEmbedColor());
+        DiscordChannel logchannel = ctx.Guild.GetChannel(805007049783902230);
+        await logchannel.SendMessageAsync(logembed);
     }
 
 
@@ -891,6 +900,14 @@ public class ExtendedModerationSystem : ModerationSystem
             .WithColor(BotConfig.GetEmbedColor())
             .WithFooter(ctx.User.UsernameWithDiscriminator, ctx.User.AvatarUrl).Build();
         await ctx.RespondAsync(sembed);
+        var logembed = new DiscordEmbedBuilder()
+.WithAuthor(ctx.User.UsernameWithDiscriminator, null, ctx.User.AvatarUrl)
+.WithDescription(
+$"**Warned:** {user.UsernameWithDiscriminator} (ID: ``{user.Id}``)\n" +
+$"**Grund:** {reason}")
+.WithColor(BotConfig.GetEmbedColor());
+        DiscordChannel logchannel = ctx.Guild.GetChannel(805007049783902230);
+        await logchannel.SendMessageAsync(logembed);
     }
 }
 

@@ -1348,7 +1348,7 @@ public class TempVoiceCommands : TempVoiceHelper
                             $"> ``{prefix}channelmod reset`` - Entfernt alle Kanalmoderatoren\n" +
                             $"> ``{prefix}channelmod list`` - Listet alle Kanalmoderatoren auf\n\n"
                             + "¹ Funktion kann auch von einem Kanalmoderator ausgeführt werden.\n\n" +
-                            "*Sollte etwas unklar sein, kannst du ein Ticket in <#826083443489636372> öffnen.*";
+                            "*Sollte etwas unklar sein, kannst du ein Ticket in <#980453709584687204> öffnen.*";
 
         eb.WithTitle("Temp-VC Commands");
         eb.WithDescription(helpstring);

@@ -1,5 +1,7 @@
-﻿using DisCatSharp.Entities;
+﻿using DisCatSharp;
+using DisCatSharp.Entities;
 using DisCatSharp.Enums;
+using DisCatSharp.Exceptions;
 
 namespace DreamyManagement;
 
@@ -43,4 +45,30 @@ internal static class DiscordExtension
                     : new DiscordOverwriteBuilder(x.GetMemberAsync().Result) { Allowed = x.Allowed, Denied = x.Denied })
             .ToList();
     }
+
+    internal static async Task<DiscordUser?> TryGetUserAsync(this DiscordClient client, ulong userId, bool fetch = true)
+    {
+        try
+        {
+            return await client.GetUserAsync(userId, fetch).ConfigureAwait(false);
+        }
+        catch (NotFoundException)
+        {
+            return null;
+        }
+    }
+
+
+    internal static async Task<DiscordChannel?> TryGetChannelAsync(this DiscordClient client, ulong id, bool fetch = true)
+    {
+        try
+        {
+            return await client.GetChannelAsync(id, fetch).ConfigureAwait(false);
+        }
+        catch (NotFoundException)
+        {
+            return null;
+        }
+    }
+
 }
