@@ -11,6 +11,9 @@ using DisCatSharp.Interactivity;
 using DisCatSharp.Interactivity.Extensions;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
+using CatBox.NET;
+using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 
 namespace DreamyManagement;
 
@@ -56,6 +59,17 @@ internal class Program : BaseCommandModule
             }
         }
 
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .WriteTo.Console()
+            .CreateLogger();
+
+        var serviceProvider = new ServiceCollection()
+            .AddCatBoxServices(f => f.CatBoxUrl = new Uri("https://catbox.moe/user/api.php"))
+            .AddLogging(lb => lb.AddSerilog())
+            .BuildServiceProvider();
+
+
 
         DatabaseService.OpenConnection();
         var discord = new DiscordClient(new DiscordConfiguration
@@ -68,6 +82,7 @@ internal class Program : BaseCommandModule
             LogTimestampFormat = "MMM dd yyyy - HH:mm:ss tt",
             DeveloperUserId = GlobalProperties.BotOwnerId,
             Locale = "de",
+            ServiceProvider = serviceProvider,
             MessageCacheSize = 10000
         });
         discord.RegisterEventHandlers(Assembly.GetExecutingAssembly());
