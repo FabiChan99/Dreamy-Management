@@ -1014,7 +1014,7 @@ public class ModerationSystem : BaseCommandModule
                 var banEmbedBuilder = new DiscordEmbedBuilder()
                     .WithTitle($"Du wurdest von {ctx.Guild.Name} gebannt!")
                     .WithDescription($"**Begründung:**```{reason}```\n")
-                    .WithColor(DiscordColor.Red);
+                    .WithColor(DiscordColor.Red).Build();
 
                 await result.Result.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
                 var loadingEmbedBuilder = new DiscordEmbedBuilder()
@@ -1038,7 +1038,7 @@ public class ModerationSystem : BaseCommandModule
                 DiscordMessage? umsg = null;
                 try
                 {
-                    umsg = await user.SendMessageAsync(embed);
+                    umsg = await user.SendMessageAsync(banEmbedBuilder);
                     sent = true;
                 }
                 catch
