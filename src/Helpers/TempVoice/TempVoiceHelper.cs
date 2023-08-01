@@ -1,13 +1,12 @@
-﻿using DreamyManagement.Services.DatabaseHandler;
-using DisCatSharp;
+﻿using DisCatSharp;
 using DisCatSharp.CommandsNext;
 using DisCatSharp.Entities;
 using DisCatSharp.Enums;
 using DisCatSharp.EventArgs;
 using DisCatSharp.Exceptions;
 using DisCatSharp.Interactivity.Extensions;
+using DreamyManagement.Services.DatabaseHandler;
 using Npgsql;
-using DisCatSharp.ApplicationCommands.Context;
 
 namespace DreamyManagement.Helpers.TempVoice;
 
@@ -68,7 +67,7 @@ public class TempVoiceHelper : BaseCommandModule
     {
         return ctx.Guild.GetRole(ulong.Parse(GetVCConfig("ERole")));
     }
-        protected static async Task<bool> NoChannel(CommandContext ctx)
+    protected static async Task<bool> NoChannel(CommandContext ctx)
     {
         string errorMessage = $"<:attention:1085333468688433232> **Fehler!** " +
                               $"Du besitzt keinen eigenen Kanal oder der Kanal gehört dir nicht. " +
@@ -1179,7 +1178,7 @@ public class TempVoiceHelper : BaseCommandModule
                             role_permitted = false;
                             break;
                         }
-                        
+
                     }
                 }
 
@@ -1955,7 +1954,7 @@ public class TempVoiceHelper : BaseCommandModule
                     {
                         await user.DisconnectFromVoiceAsync();
                     }
-                    
+
 
                     usersList.Add(user);
                 }
@@ -2005,7 +2004,7 @@ public class TempVoiceHelper : BaseCommandModule
                 {
                     permited_users.Add(userid);
                 }
-            }   
+            }
 
             var blocked_users = permited_users.Count;
             var options = new List<DiscordStringSelectComponentOption>();

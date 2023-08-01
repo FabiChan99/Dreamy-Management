@@ -1,6 +1,4 @@
-﻿using DreamyManagement.Services;
-using DreamyManagement.Services.DatabaseHandler;
-using DreamyManagement.Tasks;
+﻿using CatBox.NET;
 using DisCatSharp;
 using DisCatSharp.CommandsNext;
 using DisCatSharp.CommandsNext.Exceptions;
@@ -9,11 +7,12 @@ using DisCatSharp.Enums;
 using DisCatSharp.EventArgs;
 using DisCatSharp.Interactivity;
 using DisCatSharp.Interactivity.Extensions;
-using Microsoft.Extensions.Logging;
-using System.Reflection;
-using CatBox.NET;
+using DreamyManagement.Services.DatabaseHandler;
+using DreamyManagement.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Serilog;
+using System.Reflection;
 
 namespace DreamyManagement;
 

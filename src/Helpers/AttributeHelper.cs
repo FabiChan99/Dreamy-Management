@@ -1,7 +1,7 @@
-using DreamyManagement.Services.DatabaseHandler;
 using DisCatSharp.CommandsNext;
 using DisCatSharp.CommandsNext.Attributes;
 using DisCatSharp.Entities;
+using DreamyManagement.Services.DatabaseHandler;
 
 
 namespace DreamyManagement.Helpers;
@@ -73,7 +73,7 @@ public class RequireTeamCat : CheckBaseAttribute
 }
 
 
-public class AGCEasterEggsEnabled: CheckBaseAttribute
+public class AGCEasterEggsEnabled : CheckBaseAttribute
 {
     public override async Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
     {

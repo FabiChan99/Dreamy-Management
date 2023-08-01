@@ -1,7 +1,5 @@
 ﻿using CatBox.NET.Client;
 using CatBox.NET.Requests;
-using DreamyManagement.Helpers;
-using DreamyManagement.Services.DatabaseHandler;
 using DisCatSharp;
 using DisCatSharp.CommandsNext;
 using DisCatSharp.CommandsNext.Attributes;
@@ -9,6 +7,8 @@ using DisCatSharp.Entities;
 using DisCatSharp.Enums;
 using DisCatSharp.Exceptions;
 using DisCatSharp.Interactivity.Extensions;
+using DreamyManagement.Helpers;
+using DreamyManagement.Services.DatabaseHandler;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Npgsql;
@@ -17,7 +17,7 @@ namespace DreamyManagement.Commands.Moderation;
 
 public class ExtendedModerationSystem : ModerationSystem
 {
-    private IServiceProvider _services;
+    private readonly IServiceProvider _services;
 
     public ExtendedModerationSystem(IServiceProvider services)
     {
@@ -582,7 +582,7 @@ public class ExtendedModerationSystem : ModerationSystem
         await ctx.RespondAsync(embed);
     }
 
-    
+
 
 
     [Command("multiflag")]

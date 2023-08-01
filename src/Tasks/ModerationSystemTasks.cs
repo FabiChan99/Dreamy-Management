@@ -1,5 +1,5 @@
-using DreamyManagement.Services.DatabaseHandler;
 using DisCatSharp;
+using DreamyManagement.Services.DatabaseHandler;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 
