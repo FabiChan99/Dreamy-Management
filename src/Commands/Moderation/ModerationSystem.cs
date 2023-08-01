@@ -1,10 +1,10 @@
-﻿using DreamyManagement.Helpers;
-using DisCatSharp.CommandsNext;
+﻿using DisCatSharp.CommandsNext;
 using DisCatSharp.CommandsNext.Attributes;
 using DisCatSharp.Entities;
 using DisCatSharp.Enums;
 using DisCatSharp.Exceptions;
 using DisCatSharp.Interactivity.Extensions;
+using DreamyManagement.Helpers;
 
 namespace DreamyManagement.Commands.Moderation;
 
@@ -154,6 +154,10 @@ public class ModerationSystem : BaseCommandModule
     [RequirePermissions(Permissions.BanMembers)]
     public async Task BanMember(CommandContext ctx, DiscordUser user, [RemainingText] string reason)
     {
+        if (reason == null)
+        {
+            reason = await ModerationHelper.BanReasonSelector(ctx);
+        }
         if (await Helpers.Helpers.CheckForReason(ctx, reason)) return;
         if (await Helpers.Helpers.TicketUrlCheck(ctx, reason)) return;
         var caseid = Helpers.Helpers.GenerateCaseID();
@@ -294,6 +298,10 @@ public class ModerationSystem : BaseCommandModule
     [RequirePermissions(Permissions.BanMembers)]
     public async Task SilentBanMember(CommandContext ctx, DiscordUser user, [RemainingText] string reason)
     {
+        if (reason == null)
+        {
+            reason = await ModerationHelper.BanReasonSelector(ctx);
+        }
         if (await Helpers.Helpers.CheckForReason(ctx, reason)) return;
         if (await Helpers.Helpers.TicketUrlCheck(ctx, reason)) return;
         var caseid = Helpers.Helpers.GenerateCaseID();
@@ -437,6 +445,10 @@ public class ModerationSystem : BaseCommandModule
         List<ulong> ids;
         string reason;
         Converter.SeperateIdsAndReason(ids_and_reason, out ids, out reason);
+        if (reason == "")
+        {
+            reason = await ModerationHelper.BanReasonSelector(ctx);
+        }
         if (await Helpers.Helpers.CheckForReason(ctx, reason)) return;
         if (await Helpers.Helpers.TicketUrlCheck(ctx, reason)) return;
         reason = reason.TrimEnd(' ');
@@ -605,6 +617,10 @@ public class ModerationSystem : BaseCommandModule
         List<ulong> ids;
         string reason;
         Converter.SeperateIdsAndReason(ids_and_reason, out ids, out reason);
+        if (reason == null)
+        {
+            reason = await ModerationHelper.BanReasonSelector(ctx);
+        }
         if (await Helpers.Helpers.CheckForReason(ctx, reason)) return;
         if (await Helpers.Helpers.TicketUrlCheck(ctx, reason)) return;
         reason = reason.TrimEnd(' ');
@@ -879,6 +895,10 @@ public class ModerationSystem : BaseCommandModule
     [RequireStaffRole]
     public async Task BanRequest(CommandContext ctx, DiscordUser user, [RemainingText] string reason)
     {
+        if (reason == null)
+        {
+            reason = await ModerationHelper.BanReasonSelector(ctx);
+        }
         if (await Helpers.Helpers.CheckForReason(ctx, reason)) return;
         if (await Helpers.Helpers.TicketUrlCheck(ctx, reason)) return;
         var caseid = Helpers.Helpers.GenerateCaseID();

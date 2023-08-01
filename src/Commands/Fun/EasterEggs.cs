@@ -1,6 +1,6 @@
-﻿using DreamyManagement.Helpers;
-using DisCatSharp.CommandsNext;
+﻿using DisCatSharp.CommandsNext;
 using DisCatSharp.CommandsNext.Attributes;
+using DreamyManagement.Helpers;
 
 namespace DreamyManagement.Commands.Fun;
 
