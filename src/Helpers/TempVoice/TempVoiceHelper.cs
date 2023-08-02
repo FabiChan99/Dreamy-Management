@@ -1,4 +1,4 @@
-﻿using DisCatSharp;
+using DisCatSharp;
 using DisCatSharp.CommandsNext;
 using DisCatSharp.Entities;
 using DisCatSharp.Enums;
@@ -12,31 +12,6 @@ namespace DreamyManagement.Helpers.TempVoice;
 
 public class TempVoiceHelper : BaseCommandModule
 {
-    private static readonly Dictionary<ulong, string> levelroles = new()
-    {
-        { 750402390691152005, "5+" },
-        { 798562254408777739, "10+" },
-        { 750450170189185024, "15+" },
-        { 798555933089071154, "20+" },
-        { 750450342474416249, "25+" },
-        { 750450621492101280, "30+" },
-        { 798555135071617024, "35+" },
-        { 751134108893184072, "40+" },
-        { 776055585912389673, "45+" },
-        { 750458479793274950, "50+" },
-        { 798554730988306483, "60+" },
-        { 757683142894157904, "70+" },
-        { 810231454985486377, "80+" },
-        { 810232899713630228, "90+" },
-        { 810232892386705418, "100+" }
-    };
-
-    private static readonly Dictionary<ulong, string> debuglevelroles = new()
-    {
-        { 1116778938073616545, "001" },
-        { 1116778981442723870, "002" }
-    };
-
 
     protected static string GetVCConfig(string key)
     {
@@ -1155,68 +1130,6 @@ public class TempVoiceHelper : BaseCommandModule
                 });
             return;
         }
-
-        if (userChannel != null && db_channel.Contains((long)userChannel.Id) || userChannel != null && isMod)
-        {
-            bool role_permitted = false;
-            Dictionary<ulong, string> lvlroles = levelroles;
-            foreach (var role in interaction.Guild.Roles)
-            {
-                var RoleId = role.Value.Id;
-                if (lvlroles.ContainsKey(RoleId))
-                {
-                    var temp_ow = userChannel.PermissionOverwrites.FirstOrDefault(o => o.Id == RoleId);
-                    if (temp_ow != null)
-                    {
-                        if (temp_ow?.CheckPermission(Permissions.UseVoice) == PermissionLevel.Allowed)
-                        {
-                            role_permitted = true;
-                            break;
-                        }
-                        if (temp_ow?.CheckPermission(Permissions.UseVoice) == PermissionLevel.Unset)
-                        {
-                            role_permitted = false;
-                            break;
-                        }
-
-                    }
-                }
-
-            }
-
-            if (role_permitted)
-            {
-                await interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
-                    new DiscordInteractionResponseBuilder
-                    {
-                        IsEphemeral = true,
-                        Content =
-                            "<:attention:1085333468688433232> Es wurde bereits eine **Levelbegrenzung** für diesen Channel festgelegt."
-                    });
-                return;
-            }
-
-            var options = new List<DiscordStringSelectComponentOption>();
-
-            foreach (var kvp in lvlroles)
-            {
-                ulong roleId = kvp.Key;
-                string id = kvp.Value;
-                options.Add(new DiscordStringSelectComponentOption(id, roleId.ToString()));
-            }
-
-            var selectComponent = new DiscordStringSelectComponent
-                ("Wähle ein zuzulassendes Level aus.", options, "role_permit_selector");
-            var sbuilder = new DiscordInteractionResponseBuilder
-            {
-                IsEphemeral = true,
-                Content =
-                    "<:botpoint:1083853403316297758> Um eine Option auszuwählen, verwende das Menü und klicke darauf:"
-            };
-            sbuilder.AddComponents(selectComponent);
-            await interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, sbuilder);
-            return;
-        }
     }
 
     protected static async Task PanelPermitVoiceRoleCallback(DiscordInteraction interaction, DiscordClient client,
@@ -1293,21 +1206,10 @@ public class TempVoiceHelper : BaseCommandModule
             var allowed_users = permited_users.Count;
             var options = new List<DiscordStringSelectComponentOption>();
             bool role_permitted = false;
-            Dictionary<ulong, string> lvlroles = levelroles;
             string roleName = string.Empty;
             foreach (var role in interaction.Guild.Roles)
             {
                 var RoleId = role.Value.Id;
-                if (lvlroles.ContainsKey(RoleId))
-                {
-                    var temp_ow = userChannel.PermissionOverwrites.FirstOrDefault(o => o.Id == RoleId);
-                    if (temp_ow != null)
-                    {
-                        roleName = lvlroles[RoleId];
-                        role_permitted = true;
-                        break;
-                    }
-                }
             }
 
             foreach (var uid in permited_users)
@@ -1327,15 +1229,7 @@ public class TempVoiceHelper : BaseCommandModule
                     Content = content
                 };
 
-                if (role_permitted)
-                {
-                    List<DiscordButtonComponent> buttons = new()
-                    {
-                        new DiscordButtonComponent(ButtonStyle.Primary, $"unpermit_levelrole",
-                            $"Entferne zugelassene Levelrolle ({roleName})")
-                    };
-                    sbuilder.AddComponents(buttons);
-                }
+                
 
                 await interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, sbuilder);
                 return;
@@ -1370,15 +1264,7 @@ public class TempVoiceHelper : BaseCommandModule
             {
                 new DiscordActionRowComponent(selector)
             };
-            if (role_permitted)
-            {
-                List<DiscordButtonComponent> buttons = new()
-                {
-                    new DiscordButtonComponent(ButtonStyle.Danger, $"unpermit_levelrole",
-                        $"Entferne zugelassene Levelrolle ({roleName})")
-                };
-                rowComponents.Add(new DiscordActionRowComponent(buttons));
-            }
+            
 
             string econtent = "<:botpoint:1083853403316297758> Um eine Option auszuwählen, verwende das Menü und klicke darauf:";
             var ssbuilder = new DiscordInteractionResponseBuilder()
@@ -1403,40 +1289,6 @@ public class TempVoiceHelper : BaseCommandModule
         {
             await NoChannel(interaction);
             return;
-        }
-
-        if (userChannel != null && db_channel.Contains((long)userChannel.Id) || userChannel != null && isMod)
-        {
-            DiscordChannel channel = userChannel;
-            ulong r_id = 0;
-            Dictionary<ulong, string> lvlroles = levelroles;
-            foreach (var role in interaction.Guild.Roles)
-            {
-                var RoleId = role.Value.Id;
-                if (lvlroles.ContainsKey(RoleId))
-                {
-                    var temp_ow = userChannel.PermissionOverwrites.FirstOrDefault(o => o.Id == RoleId);
-                    if (temp_ow != null)
-                    {
-                        r_id = RoleId;
-                        break;
-                    }
-                }
-            }
-
-            DiscordRole role_ = interaction.Guild.GetRole(r_id);
-            var overwrites = userChannel.PermissionOverwrites.Select(x => x.ConvertToBuilder()).ToList();
-            overwrites = overwrites.Merge(role_, Permissions.None, Permissions.None,
-                Permissions.UseVoice | Permissions.AccessChannels);
-            await channel.ModifyAsync(x => x.PermissionOverwrites = overwrites);
-            string content = $"<:success:1085333481820790944> Erfolg! Die Levelbeschränkung wurde **aufgehoben**.";
-            var sbuilder = new DiscordInteractionResponseBuilder()
-            {
-                IsEphemeral = true,
-                Content = content
-            };
-            await interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, sbuilder);
-
         }
     }
 
@@ -2008,21 +1860,7 @@ public class TempVoiceHelper : BaseCommandModule
 
             var blocked_users = permited_users.Count;
             var options = new List<DiscordStringSelectComponentOption>();
-            Dictionary<ulong, string> lvlroles = levelroles;
-            string roleName = string.Empty;
-            foreach (var role in interaction.Guild.Roles)
-            {
-                var RoleId = role.Value.Id;
-                if (lvlroles.ContainsKey(RoleId))
-                {
-                    var temp_ow = userChannel.PermissionOverwrites.FirstOrDefault(o => o.Id == RoleId);
-                    if (temp_ow != null)
-                    {
-                        roleName = lvlroles[RoleId];
-                        break;
-                    }
-                }
-            }
+            
 
             foreach (var uid in permited_users)
             {
