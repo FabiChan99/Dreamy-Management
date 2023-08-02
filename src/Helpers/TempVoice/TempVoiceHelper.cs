@@ -983,51 +983,17 @@ public class TempVoiceHelper : BaseCommandModule
             string message =
                 "<:botpoint:1083853403316297758> Um eine Option auszuwählen, verwende das Menü und klicke darauf:";
 
-            if (interaction.Guild.Id == 750365461945778209)
+            DiscordInteractionResponseBuilder ib = new()
             {
-                List<DiscordComponent> button = new()
-                {
-                    new DiscordButtonComponent(style: ButtonStyle.Secondary, $"role_permit_button",
-                        "Levelbeschränkung festlegen")
-                };
-
-
-                DiscordInteractionResponseBuilder ib = new()
-                {
-                    IsEphemeral = true,
-                    Content = message
-                };
-                List<DiscordActionRowComponent> rowComponents = new()
-                {
-                    new DiscordActionRowComponent(selector),
-                    new DiscordActionRowComponent(button),
-                };
-                await interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                    ib.AddComponents(rowComponents));
-                return;
-            }
-            else
+                IsEphemeral = true,
+                Content = message
+            };
+            List<DiscordActionRowComponent> rowComponents = new()
             {
-                List<DiscordComponent> button = new()
-                {
-                    new DiscordButtonComponent(style: ButtonStyle.Secondary, $"role_permit_button",
-                        "Levelbeschränkung festlegen")
-                };
-
-
-                DiscordInteractionResponseBuilder ib = new()
-                {
-                    IsEphemeral = true,
-                    Content = message
-                };
-                List<DiscordActionRowComponent> rowComponents = new()
-                {
-                    new DiscordActionRowComponent(selector),
-                    new DiscordActionRowComponent(button),
-                };
-                await interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                    ib.AddComponents(rowComponents));
-            }
+                new DiscordActionRowComponent(selector)
+            };
+            await interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                ib.AddComponents(rowComponents));
         }
     }
 
@@ -1092,80 +1058,7 @@ public class TempVoiceHelper : BaseCommandModule
         }
     }
 
-    protected static async Task PanelPermitVoiceRole(DiscordInteraction interaction, DiscordClient client,
-        InteractionCreateEventArgs e)
-    {
-        var db_channel = await GetChannelIDFromDB(interaction);
-        DiscordMember member = await interaction.Guild.GetMemberAsync(interaction.User.Id);
-        DiscordChannel userChannel = member?.VoiceState?.Channel;
-        bool isMod = await IsChannelMod(userChannel, interaction.User);
-
-        if (userChannel == null || !db_channel.Contains((long)userChannel?.Id) && !isMod)
-        {
-            await NoChannel(interaction);
-            return;
-        }
-
-        bool ch_locked = false;
-        var overwrite = userChannel.PermissionOverwrites.FirstOrDefault(o => o.Id == GetCustomEveryoneRole(interaction).Id);
-        if (overwrite == null || overwrite?.CheckPermission(Permissions.UseVoice) == PermissionLevel.Unset)
-        {
-            ch_locked = false;
-        }
-
-        if (overwrite?.CheckPermission(Permissions.UseVoice) == PermissionLevel.Denied)
-        {
-            ch_locked = true;
-        }
-
-        if (!ch_locked)
-        {
-
-            await interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
-                new DiscordInteractionResponseBuilder
-                {
-                    IsEphemeral = true,
-                    Content =
-                        $"<:attention:1085333468688433232> Der Channel ist **nicht gesperrt** und eine Levelbegrenzung würde __keinen Effekt__ haben. Bitte **sperre** den Channel zuerst!"
-                });
-            return;
-        }
-    }
-
-    protected static async Task PanelPermitVoiceRoleCallback(DiscordInteraction interaction, DiscordClient client,
-        ComponentInteractionCreateEventArgs e)
-    {
-        var db_channel = await GetChannelIDFromDB(interaction);
-        DiscordMember member = await interaction.Guild.GetMemberAsync(interaction.User.Id);
-        DiscordChannel userChannel = member?.VoiceState?.Channel;
-        bool isMod = await IsChannelMod(userChannel, interaction.User);
-
-        if (userChannel == null || !db_channel.Contains((long)userChannel?.Id) && !isMod)
-        {
-            await NoChannel(interaction);
-            return;
-        }
-
-        if (userChannel != null && db_channel.Contains((long)userChannel.Id) || userChannel != null && isMod)
-        {
-            var channel = userChannel;
-            var sel_role = e.Values.ToList();
-            var role = interaction.Guild.GetRole(ulong.Parse(sel_role[0]));
-            var overwrites = channel.PermissionOverwrites.Select(x => x.ConvertToBuilder())
-                .ToList();
-            overwrites = overwrites.Merge(role, Permissions.AccessChannels | Permissions.UseVoice, Permissions.None);
-            await channel.ModifyAsync(x => { x.PermissionOverwrites = overwrites; });
-            await interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage,
-                new DiscordInteractionResponseBuilder
-                {
-                    IsEphemeral = true,
-                    Content =
-                        $"<:success:1085333481820790944> Erfolg! Es können nur noch Mitglieder den Kanal betreten, die die Rolle ``{role.Name}`` haben."
-                });
-            return;
-        }
-    }
-
+    
     protected static async Task PanelChannelUnpermit(DiscordInteraction interaction, DiscordClient client,
         ComponentInteractionCreateEventArgs e)
     {
@@ -1277,20 +1170,6 @@ public class TempVoiceHelper : BaseCommandModule
         }
     }
 
-    protected static async Task PanelChannelUnpermitRoleCallback(DiscordInteraction interaction, DiscordClient client,
-        ComponentInteractionCreateEventArgs e)
-    {
-        var db_channel = await GetChannelIDFromDB(interaction);
-        DiscordMember member = await interaction.Guild.GetMemberAsync(interaction.User.Id);
-        DiscordChannel userChannel = member?.VoiceState?.Channel;
-        bool isMod = await IsChannelMod(userChannel, interaction.User);
-
-        if (userChannel == null || !db_channel.Contains((long)userChannel?.Id) && !isMod)
-        {
-            await NoChannel(interaction);
-            return;
-        }
-    }
 
     protected static async Task PanelChannelUnpermitUserCallback(DiscordInteraction interaction, DiscordClient client,
         ComponentInteractionCreateEventArgs e)

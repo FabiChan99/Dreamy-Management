@@ -2036,21 +2036,9 @@ public class TempVoicePanelEventHandler : TempVoiceHelper
                 {
                     await PanelPermitVoiceSelectorCallback(Interaction, sender, e);
                 }
-                else if (customid == "role_permit_button")
-                {
-                    await PanelPermitVoiceRole(Interaction, sender, e);
-                }
-                else if (customid == "role_permit_selector")
-                {
-                    await PanelPermitVoiceRoleCallback(Interaction, sender, e);
-                }
                 else if (customid == "channel_unpermit")
                 {
                     await PanelChannelUnpermit(Interaction, sender, e);
-                }
-                else if (customid == "unpermit_levelrole")
-                {
-                    await PanelChannelUnpermitRoleCallback(Interaction, sender, e);
                 }
                 else if (customid == "unpermit_selector")
                 {
