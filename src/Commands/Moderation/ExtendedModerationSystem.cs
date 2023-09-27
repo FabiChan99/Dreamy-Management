@@ -12,6 +12,7 @@ using DreamyManagement.Services.DatabaseHandler;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Npgsql;
+using RestSharp;
 
 namespace DreamyManagement.Commands.Moderation;
 
@@ -55,23 +56,24 @@ public class ExtendedModerationSystem : ModerationSystem
 
     private async Task<string> UploadToCatBox(CommandContext ctx, List<DiscordAttachment> imgAttachments)
     {
-
         await ctx.Message.CreateReactionAsync(DiscordEmoji.FromGuildEmote(ctx.Client, 1084157150747697203));
-        var httpClient = new HttpClient();
+        string apiurl = "https://catbox.moe/user/api.php";
+        var client = new RestClient(apiurl);
         string urls = "";
+
         foreach (DiscordAttachment att in imgAttachments)
         {
-            var bytesImage = await httpClient.GetByteArrayAsync(att.Url);
-            using var stream = new MemoryStream(bytesImage);
-            using var scope = _services.CreateScope();
-            var client = scope.ServiceProvider.GetRequiredService<ICatBoxClient>();
-            var response = await client.UploadImage(new StreamUploadRequest
-            {
-                Stream = stream,
-                FileName = att.FileName
-            });
+            var bytesImage = await new HttpClient().GetByteArrayAsync(att.Url.Split('?')[0]);
+            //using var stream = new MemoryStream(bytesImage);
 
-            urls += $" {response}";
+            var request = new RestRequest(apiurl, Method.Post);
+            request.AddParameter("reqtype", "fileupload");
+            request.AddHeader("Content-Type", "multipart/form-data");
+            request.AddFile("fileToUpload", bytesImage, att.FileName);
+
+
+            var response = await client.ExecuteAsync(request);
+            urls += $" {response.Content}";
         }
 
         await ctx.Message.DeleteOwnReactionAsync(DiscordEmoji.FromGuildEmote(ctx.Client, 1084157150747697203));
