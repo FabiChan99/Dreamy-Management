@@ -69,7 +69,7 @@ public class ExtendedModerationSystem : ModerationSystem
             var request = new RestRequest(apiurl, Method.Post);
             request.AddParameter("reqtype", "fileupload");
             request.AddHeader("Content-Type", "multipart/form-data");
-            request.AddFile("fileToUpload", bytesImage, att.FileName);
+            request.AddFile("fileToUpload", bytesImage, att.Filename);
 
 
             var response = await client.ExecuteAsync(request);
@@ -539,7 +539,7 @@ public class ExtendedModerationSystem : ModerationSystem
 
         var imgExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
         var imgAttachments = ctx.Message.Attachments
-            .Where(att => imgExtensions.Contains(Path.GetExtension(att.FileName).ToLower()))
+            .Where(att => imgExtensions.Contains(Path.GetExtension(att.Filename).ToLower()))
             .ToList();
         string urls = "";
         if (imgAttachments.Count > 0)
@@ -625,7 +625,7 @@ public class ExtendedModerationSystem : ModerationSystem
 
         var imgExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
         var imgAttachments = ctx.Message.Attachments
-            .Where(att => imgExtensions.Contains(Path.GetExtension(att.FileName).ToLower()))
+            .Where(att => imgExtensions.Contains(Path.GetExtension(att.Filename).ToLower()))
             .ToList();
         string urls = "";
         if (imgAttachments.Count > 0)
