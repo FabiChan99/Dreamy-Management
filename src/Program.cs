@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using System.Reflection;
+using DisCatSharp.ApplicationCommands;
 
 namespace DreamyManagement;
 
@@ -94,6 +95,13 @@ internal class Program : BaseCommandModule
             IgnoreExtraArguments = true,
             EnableDefaultHelp = bool.Parse(BotConfig.GetConfig()["MainConfig"]["EnableBuiltInHelp"])
         });
+        
+        var appCommands = discord.UseApplicationCommands(new ApplicationCommandsConfiguration
+        {
+            ServiceProvider = serviceProvider, DebugStartup = true, EnableDefaultHelp = false
+        });
+        appCommands.RegisterGlobalCommands(Assembly.GetExecutingAssembly());
+        
         discord.ClientErrored += Discord_ClientErrored;
         discord.UseInteractivity(new InteractivityConfiguration
         {
