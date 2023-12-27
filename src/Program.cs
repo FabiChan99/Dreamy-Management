@@ -96,11 +96,6 @@ internal class Program : BaseCommandModule
             EnableDefaultHelp = bool.Parse(BotConfig.GetConfig()["MainConfig"]["EnableBuiltInHelp"])
         });
         
-        var appCommands = discord.UseApplicationCommands(new ApplicationCommandsConfiguration
-        {
-            ServiceProvider = serviceProvider, DebugStartup = true, EnableDefaultHelp = false
-        });
-        appCommands.RegisterGlobalCommands(Assembly.GetExecutingAssembly());
         
         discord.ClientErrored += Discord_ClientErrored;
         discord.UseInteractivity(new InteractivityConfiguration
