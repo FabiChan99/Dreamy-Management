@@ -1,3 +1,4 @@
+using System.Text;
 using DisCatSharp.CommandsNext;
 using DisCatSharp.Entities;
 
@@ -31,9 +32,76 @@ public static class Helpers
 
         return false;
     }
+    
+    public static int ParseDate(string dateInput)
+    {
+        var input = dateInput;
+        var minutes = 0;
+        int currentNumber;
+        var numberBuilder = new StringBuilder();
 
+        input = input.Replace("mo", "#");
+        input = input.Replace("min", "m");
 
+        for (int i = 0; i < input.Length; i++)
+        {
+            char ch = input[i];
+            if (char.IsDigit(ch))
+            {
+                numberBuilder.Append(ch);
+            }
+            else
+            {
+                if (numberBuilder.Length > 0)
+                {
+                    currentNumber = int.Parse(numberBuilder.ToString());
+                    numberBuilder.Clear();
 
+                    minutes += ch switch
+                    {
+                        'd' => currentNumber * 1440,
+                        'h' => currentNumber * 60,
+                        'm' => currentNumber,
+                        'w' => currentNumber * 10080,
+                        '#' => currentNumber * 43200,
+                        _ => throw new NotSupportedException("Invalid input")
+                    };
+                }
+            }
+        }
+
+        return minutes;
+    }
+
+    public static string FormatDate(int minutes)
+    {
+        var time = TimeSpan.FromMinutes(minutes);
+        var days = time.Days;
+        var hours = time.Hours;
+        var minutesLeft = time.Minutes;
+
+        var formattedTime = new StringBuilder();
+
+        if (days > 0)
+        {
+            formattedTime.Append(days);
+            formattedTime.Append("d ");
+        }
+
+        if (hours > 0)
+        {
+            formattedTime.Append(hours);
+            formattedTime.Append("h ");
+        }
+
+        if (minutesLeft > 0)
+        {
+            formattedTime.Append(minutesLeft);
+            formattedTime.Append("m");
+        }
+
+        return formattedTime.ToString();
+    }
 
 
     public static IEnumerable<DiscordOverwriteBuilder> MergeOverwrites(DiscordChannel userChannel, List<DiscordOverwriteBuilder> overwrites,

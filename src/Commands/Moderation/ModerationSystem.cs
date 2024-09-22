@@ -149,6 +149,148 @@ public class ModerationSystem : BaseCommandModule
         }
     }
 
+    [Command("mute")]
+    [Description("Muted einen User.")]
+    [Aliases("tempmute", "timeout")]
+    [RequirePermissions(Permissions.ModerateMembers)]
+    public async Task MuteMember(CommandContext ctx, DiscordMember member, string duration,
+        [RemainingText] string reason)
+    {
+        var minutesToTimeout = Helpers.Helpers.ParseDate(duration);
+
+        if (await Helpers.Helpers.CheckForReason(ctx, reason)) return;
+        if (await Helpers.Helpers.TicketUrlCheck(ctx, reason)) return;
+        var caseid = Helpers.Helpers.GenerateCaseID();
+        var embedBuilder = new DiscordEmbedBuilder()
+            .WithTitle($"Du wurdest von {ctx.Guild.Name} gemuted!")
+            .WithDescription($"**Begründung:**```{reason}```\n**Dauer:**```{Helpers.Helpers.FormatDate(minutesToTimeout)}```")
+            .WithColor(DiscordColor.Red);
+
+        var embed = embedBuilder.Build();
+        var ReasonString =
+            $"Grund: {reason} | Von Moderator: {ctx.User.UsernameWithDiscriminator} | Datum: {DateTime.Now:dd.MM.yyyy - HH:mm}";
+        var interactivity = ctx.Client.GetInteractivity();
+        var confirmEmbedBuilder = new DiscordEmbedBuilder()
+            .WithTitle("Überprüfe deine Eingabe | Aktion: Mute")
+            .WithFooter(ctx.User.UsernameWithDiscriminator, ctx.User.AvatarUrl)
+            .WithDescription($"Bitte überprüfe deine Eingabe und bestätige mit ✅ um fortzufahren.\n\n" +
+                             $"__Users:__\n" +
+                             $"```{member.UsernameWithDiscriminator}```\n__Grund:__```{reason}```\n__Dauer:__```{Helpers.Helpers.FormatDate(minutesToTimeout)}```")
+            .WithColor(BotConfig.GetEmbedColor());
+        var embed__ = confirmEmbedBuilder.Build();
+        List<DiscordButtonComponent> buttons = new(2)
+        {
+            new DiscordButtonComponent(ButtonStyle.Secondary, $"mute_accept_{caseid}", "✅"),
+            new DiscordButtonComponent(ButtonStyle.Secondary, $"mute_deny_{caseid}", "❌")
+        };
+        var confirmMessage = new DiscordMessageBuilder()
+            .WithEmbed(embed__).AddComponents(buttons).WithReply(ctx.Message.Id);
+        var confirm = await ctx.Channel.SendMessageAsync(confirmMessage);
+        var interaction = await interactivity.WaitForButtonAsync(confirm, ctx.User, TimeSpan.FromSeconds(60));
+        buttons.ForEach(x => x.Disable());
+        if (interaction.TimedOut)
+        {
+            var embed_ = new DiscordMessageBuilder()
+                .WithEmbed(confirmEmbedBuilder.WithTitle("Mute abgebrochen")
+                    .WithFooter(ctx.User.UsernameWithDiscriminator, ctx.User.AvatarUrl)
+                    .WithDescription(
+                        "Der Mute wurde abgebrochen.\n\nGrund: Zeitüberschreitung. <:counting_warning:962007085426556989>")
+                    .WithColor(DiscordColor.Red).Build());
+            await confirm.ModifyAsync(embed_);
+            return;
+        }
+
+        if (interaction.Result.Id == $"mute_deny_{caseid}")
+        {
+            await interaction.Result.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
+            var embed_ = new DiscordMessageBuilder()
+                .WithEmbed(confirmEmbedBuilder.WithTitle("Mute abgebrochen")
+                    .WithFooter(ctx.User.UsernameWithDiscriminator, ctx.User.AvatarUrl)
+                    .WithDescription(
+                        "Der Mute wurde abgebrochen.\n\nGrund: Abgebrochen. <:counting_warning:962007085426556989>")
+                    .WithColor(DiscordColor.Red).Build());
+            await confirm.ModifyAsync(embed_);
+            return;
+        }
+
+        if (interaction.Result.Id == $"mute_accept_{caseid}")
+        {
+            await interaction.Result.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
+            var loadingEmbedBuilder = new DiscordEmbedBuilder()
+                .WithTitle("Mute wird bearbeitet")
+                .WithFooter(ctx.User.UsernameWithDiscriminator, ctx.User.AvatarUrl)
+                .WithDescription("Der Mute wird bearbeitet. Bitte warten...")
+                .WithColor(DiscordColor.Yellow);
+            var loadingEmbed = loadingEmbedBuilder.Build();
+            var loadingMessage = new DiscordMessageBuilder()
+                .WithEmbed(loadingEmbed).AddComponents(buttons)
+                .WithReply(ctx.Message.Id);
+            await confirm.ModifyAsync(loadingMessage);
+
+            var b_users = "";
+            var n_users = "";
+            string e_string;
+            var ec = DiscordColor.Red;
+            DiscordMessage? umsg = null;
+            try
+            {
+                umsg = await member.SendMessageAsync(embed);
+            }
+            catch
+            {
+                // ignored
+            }
+
+            var semoji = umsg != null ? "✅" : "❌";
+            try
+            {
+                // timeout with timespan
+                var timespan = TimeSpan.FromMinutes(minutesToTimeout);
+                await member.TimeoutAsync(timespan, ReasonString);
+                b_users += $"{member.UsernameWithDiscriminator} | DM: {semoji}\n";
+            }
+            catch (UnauthorizedException)
+            {
+                n_users += $"{member.UsernameWithDiscriminator}\n";
+            }
+
+            if (n_users != "")
+            {
+                e_string = $"Der Mute war nicht erfolgreich.\n" +
+                           $"__Grund:__ ```{reason}```\n";
+                e_string += $"__Nicht gemutete User:__\n" +
+                            $"```{n_users}```";
+                ec = DiscordColor.Red;
+                if (umsg != null)
+                    try
+                    {
+                        await umsg.DeleteAsync();
+                    }
+                    catch (Exception)
+                    {
+                        // ignored
+                    }
+            }
+            else
+            {
+                e_string = $"Der Mute wurde erfolgreich abgeschlossen.\n" +
+                           $"__Grund:__ ```{reason}```\n" +
+                           $"__Gemutete User:__\n" +
+                           $"```{b_users}```";
+                ec = DiscordColor.Green;
+            }
+
+            var discordEmbed = new DiscordEmbedBuilder()
+                .WithTitle("Mute abgeschlossen")
+                .WithDescription(e_string)
+                .WithFooter(ctx.User.UsernameWithDiscriminator, ctx.User.AvatarUrl)
+                .WithColor(ec)
+                .Build();
+            await confirm.ModifyAsync(new DiscordMessageBuilder().WithEmbed(discordEmbed));
+        }
+    }
+
+
     [Command("ban")]
     [Description("Bannt einen User vom Server")]
     [RequirePermissions(Permissions.BanMembers)]
